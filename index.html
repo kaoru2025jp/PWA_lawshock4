@@ -1,83 +1,108 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M計算機</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            padding: 20px;
-        }
-        h1 {
-            color: #00698f;
-        }
-        label {
-            display: block;
-            margin-bottom: 10px;
-        }
-        input {
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        button:hover {
-            background-color: #3e8e41;
-        }
-        #reset {
-            background-color: #f44336;
-        }
-        #reset:hover {
-            background-color: #e53935;
-        }
-        #result {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M計算機</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    padding: 20px;
+}
+h1 { color: #00698f; }
+
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+#reset {
+    background-color: #f44336;
+}
+
+#result {
+    margin-top: 20px;
+    font-weight: bold;
+}
+</style>
 </head>
+
 <body>
-    <h1>M計算機</h1>
-    <label>B: <input id="B" type="number" value="100"></label>
-    <label>V: <input id="V" type="number" value="10"></label>
-    <label>C: <input id="C" type="number" value="5"></label>
-    <label>r: <input id="r" type="number" value="0.05"></label>
-    <label>T: <input id="T" type="number" value="1"></label>
-    <button id="calculate">計算</button>
-    <button id="reset">リセット</button>
-    <p id="result"></p>
 
-    <script>
-        document.getElementById('calculate').addEventListener('click', () => {
-            const B = parseFloat(document.getElementById('B').value);
-            const V = parseFloat(document.getElementById('V').value);
-            const C = parseFloat(document.getElementById('C').value);
-            const r = parseFloat(document.getElementById('r').value);
-            const T = parseFloat(document.getElementById('T').value);
+<h1>M計算機</h1>
 
-            const M = (B * V - C) / V * Math.exp(-r * T);
-            document.getElementById('result').textContent = `M = ${M.toFixed(4)}`;
-        });
+<label>B: <input id="B" type="number" value="100"></label>
+<label>V: <input id="V" type="number" value="10"></label>
+<label>C: <input id="C" type="number" value="5"></label>
+<label>r: <input id="r" type="number" value="0.05"></label>
+<label>T: <input id="T" type="number" value="1"></label>
 
-        document.getElementById('reset').addEventListener('click', () => {
-            document.getElementById('B').value = 100;
-            document.getElementById('V').value = 10;
-            document.getElementById('C').value = 5;
-            document.getElementById('r').value = 0.05;
-            document.getElementById('T').value = 1;
-            document.getElementById('result').textContent = '';
-        });
-    </script>
+<button onclick="calculate()">計算</button>
+<button onclick="resetForm()">リセット</button>
+
+<p id="result"></p>
+
+<script>
+const GAS_URL = "ここにあなたのGASのURL";
+
+// JSONPコールバック
+function callback(response) {
+    console.log("送信成功:", response);
+}
+
+function calculate() {
+    const B = document.getElementById('B').value;
+    const V = document.getElementById('V').value;
+    const C = document.getElementById('C').value;
+    const r = document.getElementById('r').value;
+    const T = document.getElementById('T').value;
+
+    const M = ((B * V - C) / V) * Math.exp(-r * T);
+
+    document.getElementById('result').textContent = `M = ${M.toFixed(4)}`;
+
+    // JSONP送信（scriptタグ方式）
+    const script = document.createElement("script");
+
+    script.src = GAS_URL
+        + "?callback=callback"
+        + "&B=" + B
+        + "&V=" + V
+        + "&C=" + C
+        + "&r=" + r
+        + "&T=" + T
+        + "&M=" + M;
+
+    document.body.appendChild(script);
+}
+
+function resetForm() {
+    document.getElementById('B').value = 100;
+    document.getElementById('V').value = 10;
+    document.getElementById('C').value = 5;
+    document.getElementById('r').value = 0.05;
+    document.getElementById('T').value = 1;
+    document.getElementById('result').textContent = '';
+}
+</script>
+
 </body>
 </html>
